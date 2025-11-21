@@ -37,26 +37,21 @@ jobs:
       run: chmod +x gradlew
     
     - name: Decode Keystore
-      env:
-        ENCODED_KEYSTORE: ${{ secrets.SIGNING_KEY }}
-      if: env.ENCODED_KEYSTORE != null
+      if: ${{ secrets.SIGNING_KEY != '' }}
       run: |
-        echo $ENCODED_KEYSTORE | base64 -di > app/store.jks
+        echo "${{ secrets.SIGNING_KEY }}" | base64 -di > app/store.jks
     
     - name: Build Release APK
-      env:
-        SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
-        SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
-        SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
       run: |
-        if [ -f "app/store.jks" ]; then
+        if [ -f "app/store.jks" ] && [ -n "${{ secrets.SIGNING_STORE_PASSWORD }}" ]; then
+          echo "Building signed release APK..."
           ./gradlew assembleRelease \
             -Pandroid.injected.signing.store.file=$(pwd)/app/store.jks \
-            -Pandroid.injected.signing.store.password=$SIGNING_STORE_PASSWORD \
-            -Pandroid.injected.signing.key.alias=$SIGNING_KEY_ALIAS \
-            -Pandroid.injected.signing.key.password=$SIGNING_KEY_PASSWORD
+            -Pandroid.injected.signing.store.password=${{ secrets.SIGNING_STORE_PASSWORD }} \
+            -Pandroid.injected.signing.key.alias=${{ secrets.SIGNING_KEY_ALIAS }} \
+            -Pandroid.injected.signing.key.password=${{ secrets.SIGNING_KEY_PASSWORD }}
         else
-          echo "No keystore found, building unsigned release"
+          echo "Building unsigned release APK..."
           ./gradlew assembleRelease
         fi
     
