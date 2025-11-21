@@ -99,65 +99,116 @@ public class HciLogActivity extends BaseActivity<HciLogViewModel> implements IPa
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.snoop_log_path_button:
-                SetSnoopFilePathDialog dialog = new SetSnoopFilePathDialog(HciLogActivity.this, mSnoopLogUtil);
-                dialog.show();
-                break;
-            case R.id.share_snoop_log_button:
-                final CharSequence[] items = new CharSequence[]{ "ATT Log", "L2CAP Log", "HCI Log", "Raw Snoop Log" };
-                final boolean[] selected = new boolean[]{ false, false, false, false };
-                new MaterialAlertDialogBuilder(this)
-                        .setTitle("Select Logs to share")
-                        .setMultiChoiceItems(items, selected, new DialogInterface.OnMultiChoiceClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                                selected[which] = isChecked;
+        // switch (item.getItemId()) {
+        //     case R.id.snoop_log_path_button:
+        //         SetSnoopFilePathDialog dialog = new SetSnoopFilePathDialog(HciLogActivity.this, mSnoopLogUtil);
+        //         dialog.show();
+        //         break;
+        //     case R.id.share_snoop_log_button:
+        //         final CharSequence[] items = new CharSequence[]{ "ATT Log", "L2CAP Log", "HCI Log", "Raw Snoop Log" };
+        //         final boolean[] selected = new boolean[]{ false, false, false, false };
+        //         new MaterialAlertDialogBuilder(this)
+        //                 .setTitle("Select Logs to share")
+        //                 .setMultiChoiceItems(items, selected, new DialogInterface.OnMultiChoiceClickListener() {
+        //                     @Override
+        //                     public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+        //                         selected[which] = isChecked;
+        //                     }
+        //                 })
+        //                 .setPositiveButton("Share", new DialogInterface.OnClickListener() {
+        //                     @Override
+        //                     public void onClick(DialogInterface dialog, int which) {
+        //                         ArrayList<Uri> uris = new ArrayList<>();
+
+        //                         if (selected[0]) {
+        //                             String fileName = "attPackets.json";
+        //                             Log.d(TAG, "Sharing following packets " +  fileName);
+        //                             uris.add(mSnoopLogUtil.getSharableUriForBlePackets(Objects.requireNonNull(getApplicationContext()), fileName, mViewModel.getmAttPackets().getValue()));
+        //                         }
+
+        //                         if (selected[1]) {
+        //                             String fileName = "l2capPackets.json";
+        //                             Log.d(TAG, "Sharing following packets " +  fileName);
+        //                             uris.add(mSnoopLogUtil.getSharableUriForBlePackets(Objects.requireNonNull(getApplicationContext()), fileName, mViewModel.getmL2capPackets().getValue()));
+        //                         }
+
+        //                         if (selected[2]) {
+        //                             String fileName = "hciPackets.json";
+        //                             Log.d(TAG, "Sharing following packets " +  fileName);
+        //                             uris.add(mSnoopLogUtil.getSharableUriForBlePackets(Objects.requireNonNull(getApplicationContext()), fileName, mViewModel.getmHciPackets().getValue()));
+        //                         }
+
+        //                         if (selected[3]) {
+        //                             Log.d(TAG, "Sharing following packets " +  HciSnoopLogUtil.BTSNOOP_PATH);
+        //                             uris.add(FileProvider.getUriForFile(Objects.requireNonNull(getApplicationContext()), getApplicationContext().getPackageName() + ".provider", new File(HciSnoopLogUtil.BTSNOOP_PATH)));
+        //                         }
+
+        //                         Intent share = new Intent(Intent.ACTION_SEND_MULTIPLE);
+        //                         share.setType("text/plain");
+        //                         share.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+        //                         startActivity(Intent.createChooser(share, "Share packages"));
+        //                     }
+        //                 })
+        //                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        //                     @Override
+        //                     public void onClick(DialogInterface dialog, int which) {
+
+        //                     }
+        //                 }).show();
+        //         break;
+        //     default:
+        //         return super.onOptionsItemSelected(item);
+        // }
+        if (item.getItemId() == R.id.snoop_log_path_button) {
+            SetSnoopFilePathDialog dialog = new SetSnoopFilePathDialog(HciLogActivity.this, mSnoopLogUtil);
+            dialog.show();
+        } else if (item.getItemId() == R.id.share_snoop_log_button) {
+            final CharSequence[] items = new CharSequence[]{ "ATT Log", "L2CAP Log", "HCI Log", "Raw Snoop Log" };
+            final boolean[] selected = new boolean[]{ false, false, false, false };
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle("Select Logs to share")
+                    .setMultiChoiceItems(items, selected, new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                            selected[which] = isChecked;
+                        }
+                    })
+                    .setPositiveButton("Share", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ArrayList<Uri> uris = new ArrayList<>();
+
+                            if (selected[0]) {
+                                String fileName = "attPackets.json";
+                                Log.d(TAG, "Sharing following packets " +  fileName);
+                                uris.add(mSnoopLogUtil.getSharableUriForBlePackets(Objects.requireNonNull(getApplicationContext()), fileName, mViewModel.getmAttPackets().getValue()));
                             }
-                        })
-                        .setPositiveButton("Share", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ArrayList<Uri> uris = new ArrayList<>();
 
-                                if (selected[0]) {
-                                    String fileName = "attPackets.json";
-                                    Log.d(TAG, "Sharing following packets " +  fileName);
-                                    uris.add(mSnoopLogUtil.getSharableUriForBlePackets(Objects.requireNonNull(getApplicationContext()), fileName, mViewModel.getmAttPackets().getValue()));
-                                }
-
-                                if (selected[1]) {
-                                    String fileName = "l2capPackets.json";
-                                    Log.d(TAG, "Sharing following packets " +  fileName);
-                                    uris.add(mSnoopLogUtil.getSharableUriForBlePackets(Objects.requireNonNull(getApplicationContext()), fileName, mViewModel.getmL2capPackets().getValue()));
-                                }
-
-                                if (selected[2]) {
-                                    String fileName = "hciPackets.json";
-                                    Log.d(TAG, "Sharing following packets " +  fileName);
-                                    uris.add(mSnoopLogUtil.getSharableUriForBlePackets(Objects.requireNonNull(getApplicationContext()), fileName, mViewModel.getmHciPackets().getValue()));
-                                }
-
-                                if (selected[3]) {
-                                    Log.d(TAG, "Sharing following packets " +  HciSnoopLogUtil.BTSNOOP_PATH);
-                                    uris.add(FileProvider.getUriForFile(Objects.requireNonNull(getApplicationContext()), BuildConfig.APPLICATION_ID + ".provider",  new File(HciSnoopLogUtil.BTSNOOP_PATH)));
-                                }
-
-                                Intent share = new Intent(Intent.ACTION_SEND_MULTIPLE);
-                                share.setType("text/plain");
-                                share.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-                                startActivity(Intent.createChooser(share, "Share packages"));
+                            if (selected[1]) {
+                                String fileName = "l2capPackets.json";
+                                Log.d(TAG, "Sharing following packets " +  fileName);
+                                uris.add(mSnoopLogUtil.getSharableUriForBlePackets(Objects.requireNonNull(getApplicationContext()), fileName, mViewModel.getmL2capPackets().getValue()));
                             }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
 
+                            if (selected[2]) {
+                                String fileName = "hciPackets.json";
+                                Log.d(TAG, "Sharing following packets " +  fileName);
+                                uris.add(mSnoopLogUtil.getSharableUriForBlePackets(Objects.requireNonNull(getApplicationContext()), fileName, mViewModel.getmHciPackets().getValue()));
                             }
-                        }).show();
-                break;
-            default:
-                return super.onOptionsItemSelected(item);
+
+                            if (selected[3]) {
+                                Log.d(TAG, "Sharing following packets " +  HciSnoopLogUtil.BTSNOOP_PATH);
+                                uris.add(FileProvider.getUriForFile(Objects.requireNonNull(getApplicationContext()), getApplicationContext().getPackageName() + ".provider", new File(HciSnoopLogUtil.BTSNOOP_PATH)));
+                            }
+                            Intent shareIntent = new Intent();
+                            shareIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
+                            shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+                            shareIntent.setType("application/json");
+                            startActivity(Intent.createChooser(shareIntent, "Share logs"));
+                        }
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
         }
         return true;
     }

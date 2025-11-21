@@ -163,7 +163,7 @@ public class HciSnoopLogUtil implements IHciDecoder {
     public <T> Uri getSharableUriForBlePackets(Context mContext, String sFileName, ArrayList<T> packets) {
         String jsonHciPackets = serializePackets(packets);
         File dir = writeFileOnInternalStorage(mContext, sFileName, jsonHciPackets);
-        Uri uri = FileProvider.getUriForFile(Objects.requireNonNull(mContext), BuildConfig.APPLICATION_ID + ".provider", dir.getAbsoluteFile());
+        Uri uri = FileProvider.getUriForFile(Objects.requireNonNull(mContext), mContext.getPackageName() + ".provider", dir.getAbsoluteFile());
         return uri;
     }
 }

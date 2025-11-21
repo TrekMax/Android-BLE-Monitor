@@ -85,23 +85,38 @@ public abstract class BaseActivity<T extends ViewModel> extends AppCompatActivit
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch(item.getItemId()) {
-                    case R.id.action_hci_snoop:
-                        Intent i = new Intent(BaseActivity.this, HciLogActivity.class);
-                        startActivity(i);
-                        return true;
-                    case R.id.action_logging:
-                        Intent j = new Intent(BaseActivity.this, ApplicationLogActivity.class);
-                        startActivity(j);
-                        break;
-                    case R.id.action_about:
-                        AboutDialog aboutDialog = new AboutDialog(BaseActivity.this);
-                        aboutDialog.show();
-                        break;
-                    case R.id.action_components:
-                        OpenSourceComponentsDialog oscDialog = new OpenSourceComponentsDialog(BaseActivity.this);
-                        oscDialog.show();
-                        break;
+                // switch(item.getItemId()) {
+                //     case R.id.action_hci_snoop:
+                //         Intent i = new Intent(BaseActivity.this, HciLogActivity.class);
+                //         startActivity(i);
+                //         return true;
+                //     case R.id.action_logging:
+                //         Intent j = new Intent(BaseActivity.this, ApplicationLogActivity.class);
+                //         startActivity(j);
+                //         break;
+                //     case R.id.action_about:
+                //         AboutDialog aboutDialog = new AboutDialog(BaseActivity.this);
+                //         aboutDialog.show();
+                //         break;
+                //     case R.id.action_components:
+                //         OpenSourceComponentsDialog oscDialog = new OpenSourceComponentsDialog(BaseActivity.this);
+                //         oscDialog.show();
+                //         break;
+                // }
+                if (item.getItemId() == R.id.action_hci_snoop) {
+                    Intent i = new Intent(BaseActivity.this, HciLogActivity.class);
+                    startActivity(i);
+                    overridePendingTransition(0, 0);
+                } else if (item.getItemId() == R.id.action_logging) {
+                    Intent j = new Intent(BaseActivity.this, ApplicationLogActivity.class);
+                    startActivity(j);
+                    overridePendingTransition(0, 0);
+                } else if (item.getItemId() == R.id.action_about) {
+                    AboutDialog aboutDialog = new AboutDialog(BaseActivity.this);
+                    aboutDialog.show();
+                } else if (item.getItemId() == R.id.action_components) {
+                    OpenSourceComponentsDialog oscDialog = new OpenSourceComponentsDialog(BaseActivity.this);
+                    oscDialog.show();
                 }
                 return true;
             }

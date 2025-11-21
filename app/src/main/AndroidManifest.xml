@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.huc.android_ble_monitor">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 移除 package 属性 -->
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -8,6 +8,12 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- 针对 Android 12+ 的蓝牙权限 -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <!-- 针对 Android 13+ 的通知权限 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -21,37 +27,54 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Launcher"
         android:name=".StaticContext">
+
         <service
             android:name=".services.BluetoothLeService"
-            android:enabled="true">
+            android:enabled="true"
+            android:exported="false"> <!-- 添加 exported="false" -->
         </service>
+
         <activity
             android:name=".activities.MainActivity"
-            android:launchMode="singleInstance">
+            android:launchMode="singleInstance"
+            android:exported="true"> <!-- 添加 exported="true" -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".activities.DeviceDetailActivity"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName=".activities.MainActivity"
+            android:exported="false"> <!-- 添加 exported="false" -->
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.huc.android_ble_monitor.activities.MainActivity" />
         </activity>
-        <activity android:name=".activities.ServiceDetailActivity"
-            android:parentActivityName=".activities.DeviceDetailActivity"/>
-        <activity android:name=".activities.CharacteristicDetailActivity"
-            android:parentActivityName=".activities.ServiceDetailActivity"/>
-        <activity android:name=".activities.ApplicationLogActivity"
-            android:parentActivityName=".activities.MainActivity">
-        </activity>
-        <activity android:name=".activities.HciLogActivity"
-            android:parentActivityName=".activities.MainActivity">
+
+        <activity
+            android:name=".activities.ServiceDetailActivity"
+            android:parentActivityName=".activities.DeviceDetailActivity"
+            android:exported="false"/> <!-- 添加 exported="false" -->
+
+        <activity
+            android:name=".activities.CharacteristicDetailActivity"
+            android:parentActivityName=".activities.ServiceDetailActivity"
+            android:exported="false"/> <!-- 添加 exported="false" -->
+
+        <activity
+            android:name=".activities.ApplicationLogActivity"
+            android:parentActivityName=".activities.MainActivity"
+            android:exported="false"> <!-- 添加 exported="false" -->
         </activity>
 
+        <activity
+            android:name=".activities.HciLogActivity"
+            android:parentActivityName=".activities.MainActivity"
+            android:exported="false"> <!-- 添加 exported="false" -->
+        </activity>
 
         <provider
             android:name="androidx.core.content.FileProvider"

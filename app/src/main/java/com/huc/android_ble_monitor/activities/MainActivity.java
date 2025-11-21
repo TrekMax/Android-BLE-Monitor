@@ -211,17 +211,30 @@ public class MainActivity extends BaseActivity<MainActivityViewModel> implements
             return true;
         }
 
-        switch (item.getItemId()) {
-            case R.id.action_hci_snoop:
-                Intent i = new Intent(this, HciLogActivity.class);
-                startActivity(i);
-                return true;
-            case R.id.action_logging:
-                Intent j = new Intent(this, ApplicationLogActivity.class);
-                startActivity(j);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        // switch (item.getItemId()) {
+        //     case R.id.action_hci_snoop:
+        //         Intent i = new Intent(this, HciLogActivity.class);
+        //         startActivity(i);
+        //         return true;
+        //     case R.id.action_logging:
+        //         Intent j = new Intent(this, ApplicationLogActivity.class);
+        //         startActivity(j);
+        //         return true;
+        //     default:
+        //         return super.onOptionsItemSelected(item);
+        // }
+        if (item.getItemId() == R.id.action_hci_snoop) {
+            Intent i = new Intent(this, HciLogActivity.class);
+            startActivity(i);
+            overridePendingTransition(0, 0);
+            return true;
+        } else if (item.getItemId() == R.id.action_logging) {
+            Intent j = new Intent(this, ApplicationLogActivity.class);
+            startActivity(j);
+            overridePendingTransition(0, 0);
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 
