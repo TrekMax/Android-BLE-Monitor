@@ -3,17 +3,9 @@ plugins {
     id 'com.android.application'
 }
 
-// 配置版本插件，在 CI 环境中提供默认值
-versioning {
-    // 如果无法读取 Git 标签，使用默认版本
-    versionCodeType "autoIncrement"
-    versionNameType "default"
-}
-
 android {
     namespace 'com.huc.android_ble_monitor'
-    compileSdk 36// ← 添加这一行！
-    // ← 更新到较新版本
+    compileSdk 36
     buildToolsVersion '35.0.0'
 
     defaultConfig {
