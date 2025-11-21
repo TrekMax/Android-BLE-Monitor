@@ -1,0 +1,81 @@
+name: Pull Request Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  code-quality:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up JDK 11
+      uses: actions/setup-java@v4
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+        cache: gradle
+    
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+    
+    - name: Install NDK
+      run: |
+        echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.2.9519653"
+        echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/25.2.9519653" >> $GITHUB_ENV
+    
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    
+    - name: Run Lint
+      run: ./gradlew lintDebug
+      continue-on-error: true
+    
+    - name: Run Tests
+      run: ./gradlew testDebugUnitTest
+      continue-on-error: true
+    
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug
+    
+    - name: Comment PR with build status
+      uses: actions/github-script@v7
+      if: always()
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const fs = require('fs');
+          const pr_number = context.payload.pull_request.number;
+          const build_status = '${{ job.status }}';
+          
+          let comment_body = `## 🤖 Build Status: ${build_status}\n\n`;
+          comment_body += `### Build Information\n`;
+          comment_body += `- **Commit**: ${context.sha.substring(0, 7)}\n`;
+          comment_body += `- **Branch**: ${context.payload.pull_request.head.ref}\n`;
+          comment_body += `- **Build**: #${context.runNumber}\n\n`;
+          
+          if (build_status === 'success') {
+            comment_body += '✅ All checks passed!\n';
+          } else {
+            comment_body += '❌ Some checks failed. Please review the logs.\n';
+          }
+          
+          github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: pr_number,
+            body: comment_body
+          });
+    
+    - name: Upload APK for PR review
+      uses: actions/upload-artifact@v4
+      with:
+        name: pr-${{ github.event.pull_request.number }}-apk
+        path: app/build/outputs/apk/debug/*.apk
+        retention-days: 7

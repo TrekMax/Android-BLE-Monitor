@@ -106,3 +106,10 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'com.rockerhieu:rv-adapter-states:1.2'
 }
+
+// Task to print version for CI/CD
+task printVersion {
+    doLast {
+        println versioning.getVersionName()
+    }
+}
