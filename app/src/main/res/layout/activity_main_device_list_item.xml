@@ -4,11 +4,14 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FFFFFF"
+    android:background="@drawable/device_list_item_background"
     android:descendantFocusability="blocksDescendants"
     android:orientation="vertical"
     android:paddingHorizontal="10dp"
     android:paddingVertical="5dp"
+    android:layout_margin="4dp"
+    android:clickable="true"
+    android:focusable="true"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent">
@@ -331,7 +334,9 @@
     <ListView
         android:id="@+id/serviceUUIDs_ListView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:focusable="false" />
 
     <View
         android:layout_width="match_parent"
@@ -339,4 +344,3 @@
         android:layout_marginTop="5dp"
         android:background="@color/primaryLightColor" />
 </LinearLayout>
-
