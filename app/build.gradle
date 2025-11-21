@@ -11,10 +11,17 @@ android {
     defaultConfig {
         applicationId "com.huc.android_ble_monitor"
         minSdk 21
-        targetSdk 34  // ← 更新到较新版本
+        targetSdk 34
         archivesBaseName = "BLEM"
         versionCode versioning.getVersionCode()
-        versionName versioning.getVersionName()
+        // 使用 try-catch 处理无法读取标签的情况
+        versionName = { 
+            try {
+                return versioning.getVersionName()
+            } catch (Exception e) {
+                return "1.0.0-${versioning.getVersionCode()}"
+            }
+        }()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk {
             moduleName "hciviewer"
