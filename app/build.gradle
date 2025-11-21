@@ -55,6 +55,13 @@ android {
         }
     }
 
+    packaging {
+        jniLibs {
+            // 确保 native 库支持 16 KB 页面大小
+            useLegacyPackaging = false
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11 // ← 添加这一行
