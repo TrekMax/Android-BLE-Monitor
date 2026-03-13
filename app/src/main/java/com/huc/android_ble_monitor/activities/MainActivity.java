@@ -1,5 +1,6 @@
 package com.huc.android_ble_monitor.activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.ScanResult;
@@ -34,8 +35,12 @@ import com.rockerhieu.rvadapter.states.StatesRecyclerViewAdapter;
 import java.util.List;
 import pub.devrel.easypermissions.EasyPermissions;
 
+/**
+ * Main Activity of the application. Handles Bluetooth scanning and device discovery.
+ */
 public class MainActivity extends BaseActivity<MainActivityViewModel> implements ScanResultRecyclerAdapter.OnDeviceConnectListener, SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "BLEM_MainActivity";
+    private static final int RC_BLUETOOTH_PERMS = 1;
 
     private SwitchCompat mBluetoothSwitch;
     private RecyclerView mScanResultRecyclerView;
@@ -81,6 +86,9 @@ public class MainActivity extends BaseActivity<MainActivityViewModel> implements
         });
     }
 
+    /**
+     * Set up Observers for ViewModel LiveData.
+     */
     public void setObservers(){
         mViewModel.getToast().observe(this, new Observer<ToastModel>() {
             @Override
@@ -106,6 +114,9 @@ public class MainActivity extends BaseActivity<MainActivityViewModel> implements
         });
     }
 
+    /**
+     * Initialize the RecyclerView for displaying scan results.
+     */
     private void initRecyclerView(){
         // Parent of Recycler View
         mSwipeRefreshLayout = findViewById(R.id.swipe_container_scan_result);
@@ -181,7 +192,27 @@ public class MainActivity extends BaseActivity<MainActivityViewModel> implements
                 if (isChecked) {
                     if(mViewModel.isBluetoothEnabled()) {
                         Log.d(TAG, "BLE Switch checked. Scanning BLE Devices.");
-                        mBluetoothLeService.scanForDevices(true);
+                        String[] perms;
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            perms = new String[]{Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT};
+                            if (EasyPermissions.hasPermissions(MainActivity.this, perms)) {
+                                // Permission already granted, safe to scan
+                                mBluetoothLeService.scanForDevices(true);
+                            } else {
+                                // Request permission
+                                EasyPermissions.requestPermissions(MainActivity.this, "This app needs Bluetooth permissions to scan for devices.", RC_BLUETOOTH_PERMS, perms);
+                            }
+                        } else {
+                            perms = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
+                            if (EasyPermissions.hasPermissions(MainActivity.this, perms)) {
+                                // Permission already granted, safe to scan
+                                mBluetoothLeService.scanForDevices(true);
+                            } else {
+                                // Request permission
+                                EasyPermissions.requestPermissions(MainActivity.this, "This app needs Bluetooth permissions to scan for devices.", RC_BLUETOOTH_PERMS, perms);
+                            }
+                        }
+
                         mViewModel.setScanEnabled(true);
                         if(mStatesRecyclerViewAdapter.getState() != StatesRecyclerViewAdapter.STATE_NORMAL) {
                             mStatesRecyclerViewAdapter.setState(StatesRecyclerViewAdapter.STATE_LOADING);
@@ -202,8 +233,8 @@ public class MainActivity extends BaseActivity<MainActivityViewModel> implements
 
     /**
      * Called when clicking on an option in the Toolbar
-     * @param item
-     * @return
+     * @param item The menu item selected
+     * @return true if the event was handled, false otherwise
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -211,18 +242,6 @@ public class MainActivity extends BaseActivity<MainActivityViewModel> implements
             return true;
         }
 
-        // switch (item.getItemId()) {
-        //     case R.id.action_hci_snoop:
-        //         Intent i = new Intent(this, HciLogActivity.class);
-        //         startActivity(i);
-        //         return true;
-        //     case R.id.action_logging:
-        //         Intent j = new Intent(this, ApplicationLogActivity.class);
-        //         startActivity(j);
-        //         return true;
-        //     default:
-        //         return super.onOptionsItemSelected(item);
-        // }
         if (item.getItemId() == R.id.action_hci_snoop) {
             Intent i = new Intent(this, HciLogActivity.class);
             startActivity(i);
@@ -240,7 +259,7 @@ public class MainActivity extends BaseActivity<MainActivityViewModel> implements
 
     /**
      * Called when clicking on a Device Item
-     * @param position
+     * @param position The position of the item in the adapter
      */
     @Override
     public void onDeviceClick(int position) {
@@ -264,15 +283,15 @@ public class MainActivity extends BaseActivity<MainActivityViewModel> implements
                 startActivity(intent);
             }
         }catch (IndexOutOfBoundsException e){
-            Log.e(TAG, "onDeviceClick: IndexOutOfBounds Exception: " + e.getStackTrace().toString());
+            Log.e(TAG, "onDeviceClick: IndexOutOfBounds Exception: " + e.getMessage());
         }
     }
 
     /**
      * called after location permission are requested
-     * @param requestCode
-     * @param resultCode
-     * @param data
+     * @param requestCode The request code
+     * @param resultCode The result code
+     * @param data The intent data
      */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
